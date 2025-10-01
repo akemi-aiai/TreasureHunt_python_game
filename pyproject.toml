@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "project-1-antoshina-25-255-"
+version = "0.1.0"
+description = ""
+authors = ["antoshina, yaroslava.crys@yandex.ru"]
+packages = [
+    { include = "labyrinth_game" },
+]
+[tool.poetry.dependencies]
+python = "^3.13.7"
+
+[tool.poetry.scripts]
+project = "labyrinth_game.main:main"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+exclude = ["venv", ".venv", "dist", "__pycache__", ".git"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
