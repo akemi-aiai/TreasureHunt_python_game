@@ -1,7 +1,6 @@
 # Virtual environment
 .venv/
-venv/
-env/
+.ruff_cache/
 
 # Build artifacts
 dist/
@@ -15,6 +14,7 @@ __pycache__/
 *.pyd
 .Python
 
+*.log
 # IDE files
 .vscode/
 .idea/
