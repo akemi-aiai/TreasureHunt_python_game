@@ -1,26 +1,20 @@
 [tool.poetry]
-name = "project-1-antoshina-25-255-"
+name = "labyrinth-game"
 version = "0.1.0"
-description = ""
-authors = ["antoshina, yaroslava.crys@yandex.ru"]
-packages = [
-    { include = "labyrinth_game" },
-]
+description = "Текстовая приключенческая игра в лабиринте"
+authors = ["Ваше Имя <your.email@example.com>"]
+readme = "README.md"
+
 [tool.poetry.dependencies]
-python = "^3.13.7"
+python = "^3.8"
 
-[tool.poetry.scripts]
-project = "labyrinth_game.main:main"
-
-[tool.ruff]
-line-length = 88
-target-version = "py311"
-exclude = ["venv", ".venv", "dist", "__pycache__", ".git"]
-
-[tool.ruff.lint]
-select = ["E", "F", "I"]
-ignore = []
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.0"
+pytest = "^7.0.0"
 
 [build-system]
 requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+build-backend = "poetry-core.builders"
+
+[tool.poetry.scripts]
+labyrinth-game = "labyrinth_game.main:main"

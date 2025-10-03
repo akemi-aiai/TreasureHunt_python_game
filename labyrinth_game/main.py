@@ -1,29 +1,57 @@
 #!/usr/bin/env python3
 
-from labyrinth_game.constants import ROOMS, COMMANDS
+from labyrinth_game.constants import COMMANDS, ROOMS
 from labyrinth_game.player_actions import (
+    attempt_open_treasure,
     get_input,
     move_player,
     show_inventory,
+    solve_puzzle,
     take_item,
     use_item,
 )
 from labyrinth_game.utils import (
-    attempt_open_treasure,
     clear_screen,
-    describe_current_room,
     print_welcome_message,
     show_help,
-    solve_puzzle,
 )
 
-# Состояние игры
-game_state = {
-    'player_inventory': [],
-    'current_room': 'entrance',
-    'game_over': False,
-    'steps_taken': 0
-}
+
+def initialize_game():
+    """Инициализация начального состояния игры"""
+    return {
+        'player_inventory': [],
+        'current_room': 'entrance',
+        'game_over': False,
+        'steps_taken': 0
+    }
+
+
+def describe_current_room(game_state):
+    """Описание текущей комнаты"""
+    # Получаем данные о текущей комнате
+    current_room_name = game_state['current_room']
+    room = ROOMS[current_room_name]
+    
+    # Выводим название комнаты в верхнем регистре
+    print(f"\n== {current_room_name.upper()} ==")
+    
+    # Выводим описание комнаты
+    print(f"{room['description']}")
+    
+    # Выводим заметные предметы, если они есть
+    if room['items']:
+        items_list = ', '.join(room['items'])
+        print(f"Заметные предметы: {items_list}")
+    
+    # Выводим доступные выходы
+    if room['exits']:
+        exits_list = ', '.join(room['exits'].keys())
+        print(f"Выходы: {exits_list}")
+    
+    # Сообщение о наличии загадки
+    if room['puzzle']:
+        print("Кажется, здесь есть загадка (используйте команду solve).")
 
 
 def process_command(game_state, command):
@@ -83,6 +111,9 @@ def process_command(game_state, command):
 
 def main():
     """Основной игровой цикл"""
+    # Инициализация игры
+    game_state = initialize_game()
+    
     # Очищаем экран и показываем приветствие
     clear_screen()
     print("Добро пожаловать в Лабиринт сокровищ!")
