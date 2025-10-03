@@ -1,7 +1,0 @@
-.venv
-____pycache__
-.git
-ruff_cache
-.DS_Store
-*.pyc
-CACHEDIR.TAG
