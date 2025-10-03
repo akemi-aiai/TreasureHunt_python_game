@@ -29,7 +29,7 @@ def pseudo_random(seed, modulo):
 
 def random_event(game_state):
     """
-    Случайное событие, которое может произойти при перемещении
+    Случайные события, которые происходят во время перемещения игрока
     
     Args:
         game_state (dict): состояние игры
@@ -38,29 +38,45 @@ def random_event(game_state):
         bool: True если событие произошло, False если нет
     """
     steps = game_state['steps_taken']
+    current_room_name = game_state['current_room']
+    current_room = ROOMS[current_room_name]
     
-    # С вероятностью 20% происходит случайное событие
-    if pseudo_random(steps, 100) < 20:
+    # С вероятностью 10% происходит случайное событие
+    if pseudo_random(steps, 10) == 0:
         event_type = pseudo_random(steps, 3)  # 3 типа событий
         
         if event_type == 0:
-            print("\n💫 Вы нашли случайный предмет на полу!")
-            if 'healing herb' not in game_state['player_inventory']:
-                game_state['player_inventory'].append('healing herb')
-                print("Вы получили healing herb!")
+            # Сценарий 1: Находка
+            print("\n Что-то блеснуло на полу...")
+            if 'coin' not in current_room['items']:
+                current_room['items'].append('coin')
+                print("Вы нашли монетку! Она добавлена в комнату.")
+            else:
+                print("Вы видите монетку, но она уже была здесь.")
             return True
         
         elif event_type == 1:
-            print("\n Вас охватило странное чувство дежавю...")
-            print("Кажется, вы уже были здесь раньше.")
+            # Сценарий 2: Испуг
+            print("\n Вы слышите странный шорох в темноте...")
+            if 'sword' in game_state['player_inventory']:
+                print("Вы достаете меч, и шорох сразу прекращается!")
+            else:
+                print("Вам становится не по себе... Лучше поторопиться!")
             return True
         
         elif event_type == 2:
-            print("\n💎 Блеск в углу привлек ваше внимание!")
-            if 'small gem' not in game_state['player_inventory']:
-                game_state['player_inventory'].append('small gem')
-                print("Вы нашли small gem!")
-            return True
+            # Сценарий 3: Срабатывание ловушки
+            if (current_room_name == 'trap_room' and 
+                'torch' not in game_state['player_inventory']):
+                print("\n В темноте вы не заметили скрытую ловушку!")
+                return trigger_trap(game_state)
+            else:
+                # Если условия не выполнены, происходит обычное событие находки
+                print("\n Вам повезло! Вы нашли небольшой самоцвет.")
+                if 'small gem' not in game_state['player_inventory']:
+                    game_state['player_inventory'].append('small gem')
+                    print("Вы получаете small gem!")
+                return True
     
     return False
 
@@ -183,24 +199,52 @@ def solve_puzzle(game_state):
     # Получаем ответ от пользователя
     user_answer = get_input("Ваш ответ: ")
     
-    # Сравниваем ответы
-    if user_answer.lower() == correct_answer.lower():
-        print("Правильно! Загадка решена!")
+    # Создаем список альтернативных ответов
+    alternative_answers = {
+        '10': ['десять', 'ten'],
+        'резонанс': ['эхо', 'echo'],
+        'шаг шаг шаг': ['step step step', 'steps'],
+        'имя': ['name'],
+        'время': ['time', 'час', 'clock']
+    }
+    
+    # Проверяем ответ (основной или альтернативный)
+    is_correct = (
+        user_answer.lower() == correct_answer.lower() or
+        user_answer.lower() in alternative_answers.get(correct_answer, [])
+    )
+    
+    if is_correct:
+        print("🎉 Правильно! Загадка решена!")
         
         # Убираем загадку из комнаты
         room['puzzle'] = None
         
-        # Добавляем награду
-        if current_room_name == 'treasure_room':
-            print("Вы получаете treasure_key!")
+        # Добавляем награду в зависимости от комнаты
+        if current_room_name == 'hall':
+            print("🗝️ Сундук на пьедестале открывается! Вы получаете treasure_key!")
             game_state['player_inventory'].append('treasure_key')
-        elif current_room_name == 'hall':
-            print("Сундук на пьедестале открывается! Вы получаете ancient_key!")
-            game_state['player_inventory'].append('ancient_key')
+        elif current_room_name == 'library':
+            print("🗝️ В свитке вы находите rusty_key!")
+            game_state['player_inventory'].append('rusty_key')
+        elif current_room_name == 'garden':
+            print("🗝️ Фонтан открывает потайное отделение! Вы получаете golden_key!")
+            game_state['player_inventory'].append('golden_key')
+        elif current_room_name == 'treasure_room':
+            print("🔓 Замок на двери щелкает! Теперь вы можете открыть сундук.")
+            # Дверь уже открыта, награда не нужна
+        else:
+            print("✨ Вы чувствуете, что стали ближе к разгадке тайны!")
         
         return True
     else:
-        print("Неверно. Попробуйте снова.")
+        print("❌ Неверно. Попробуйте снова.")
+        
+        # В trap_room неверный ответ активирует ловушку
+        if current_room_name == 'trap_room':
+            print("💥 Неправильный ответ активирует защитный механизм!")
+            return trigger_trap(game_state)
+        
         return False
 
 
@@ -260,14 +304,9 @@ def attempt_open_treasure(game_state):
         return False
 
 
-def show_help():
+def show_help(commands):
     """Показать справку по командам игры"""
     print("\nДоступные команды:")
-    print("  go <direction>  - перейти в направлении (north/south/east/west)")
-    print("  look            - осмотреть текущую комнату")
-    print("  take <item>     - поднять предмет")
-    print("  use <item>      - использовать предмет из инвентаря")
-    print("  inventory       - показать инвентарь")
-    print("  solve           - попытаться решить загадку в комнате")
-    print("  quit            - выйти из игры")
-    print("  help            - показать это сообщение")
+    for command, description in commands.items():
+        # Форматируем вывод: команда занимает 16 символов слева
+        print(f"  {command:<16} - {description}")

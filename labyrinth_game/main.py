@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 
+from labyrinth_game.constants import ROOMS, COMMANDS
 from labyrinth_game.player_actions import (
     get_input,
     move_player,
+    show_inventory,
     take_item,
     use_item,
-    show_inventory,
 )
 from labyrinth_game.utils import (
+    attempt_open_treasure,
     clear_screen,
     describe_current_room,
     print_welcome_message,
+    show_help,
     solve_puzzle,
-    attempt_open_treasure,
 )
-from labyrinth_game.constants import ROOMS
 
 # Состояние игры
 game_state = {
@@ -45,6 +46,11 @@ def process_command(game_state, command):
             if move_player(game_state, direction):
                 describe_current_room(game_state)
         
+        # Односложные команды движения
+        case 'north' | 'south' | 'east' | 'west' | 'up' | 'down':
+            if move_player(game_state, main_command):
+                describe_current_room(game_state)
+        
         case 'take' if len(parts) > 1:
             item_name = parts[1]
             take_item(game_state, item_name)
@@ -54,9 +60,8 @@ def process_command(game_state, command):
             use_item(game_state, item_name)
         
         case 'solve':
-            # Проверяем, не пытаемся ли открыть сундук
-            if (game_state['current_room'] == 'treasure_room' and 
-                'treasure chest' in ROOMS[game_state['current_room']]['items']):
+            # В treasure_room команда solve открывает сундук
+            if game_state['current_room'] == 'treasure_room':
                 attempt_open_treasure(game_state)
             else:
                 solve_puzzle(game_state)
@@ -65,16 +70,7 @@ def process_command(game_state, command):
             show_inventory(game_state)
         
         case 'help':
-            print("\nДоступные команды:")
-            print("  look - осмотреться в комнате")
-            print("  go <направление> - пойти в указанном направлении")
-            print("  take <предмет> - взять предмет")
-            print("  use <предмет> - использовать предмет")
-            print("  solve - решить загадку или открыть сундук")
-            print("  inventory - показать инвентарь")
-            print("  quit | exit - выйти из игры")
-            print("  help - показать эту справку")
-            print("\nДоступные направления: north, south, east, west")
+            show_help(COMMANDS)
         
         case 'quit' | 'exit':
             print("Спасибо за игру! До свидания!")
