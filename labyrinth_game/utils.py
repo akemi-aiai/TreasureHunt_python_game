@@ -1,7 +1,110 @@
 #!/usr/bin/env python3
 
+import math
+
 from labyrinth_game.constants import ROOMS
 from labyrinth_game.player_actions import get_input
+
+
+def pseudo_random(seed, modulo):
+    """
+    Генератор псевдослучайных чисел на основе синуса
+    
+    Args:
+        seed (int): начальное значение (например, количество шагов)
+        modulo (int): верхняя граница диапазона [0, modulo)
+    
+    Returns:
+        int: случайное число в диапазоне [0, modulo)
+    """
+    # Используем формулу на основе синуса для генерации псевдослучайного числа
+    x = math.sin(seed * 12.9898) * 43758.5453
+    
+    # Получаем дробную часть
+    fractional_part = x - math.floor(x)
+    
+    # Приводим к нужному диапазону и возвращаем целое число
+    return int(fractional_part * modulo)
+
+
+def random_event(game_state):
+    """
+    Случайное событие, которое может произойти при перемещении
+    
+    Args:
+        game_state (dict): состояние игры
+    
+    Returns:
+        bool: True если событие произошло, False если нет
+    """
+    steps = game_state['steps_taken']
+    
+    # С вероятностью 20% происходит случайное событие
+    if pseudo_random(steps, 100) < 20:
+        event_type = pseudo_random(steps, 3)  # 3 типа событий
+        
+        if event_type == 0:
+            print("\n💫 Вы нашли случайный предмет на полу!")
+            if 'healing herb' not in game_state['player_inventory']:
+                game_state['player_inventory'].append('healing herb')
+                print("Вы получили healing herb!")
+            return True
+        
+        elif event_type == 1:
+            print("\n Вас охватило странное чувство дежавю...")
+            print("Кажется, вы уже были здесь раньше.")
+            return True
+        
+        elif event_type == 2:
+            print("\n💎 Блеск в углу привлек ваше внимание!")
+            if 'small gem' not in game_state['player_inventory']:
+                game_state['player_inventory'].append('small gem')
+                print("Вы нашли small gem!")
+            return True
+    
+    return False
+
+def trigger_trap(game_state):
+    """
+    Активация ловушки с негативными последствиями для игрока
+    
+    Args:
+        game_state (dict): состояние игры
+    
+    Returns:
+        bool: True если игра окончена, False если игрок выжил
+    """
+    print("\n Ловушка активирована! Пол стал дрожать...")
+    
+    # Проверяем инвентарь игрока
+    inventory = game_state['player_inventory']
+    
+    if inventory:
+        # Если есть предметы, теряем случайный предмет
+        item_count = len(inventory)
+        lost_item_index = pseudo_random(game_state['steps_taken'], item_count)
+        lost_item = inventory[lost_item_index]
+        
+        # Удаляем предмет из инвентаря
+        inventory.pop(lost_item_index)
+        
+        print(f"Из вашего инвентаря выпал и потерялся: {lost_item}")
+        print("К счастью, вы остались живы!")
+        return False
+    
+    else:
+        # Если инвентарь пуст, игрок получает "урон"
+        print("У вас нет предметов для защиты!")
+        damage_chance = pseudo_random(game_state['steps_taken'], 10)
+        
+        if damage_chance < 3:  # 30% шанс проигрыша
+            print("Вас настигает ловушка! Вы не успели увернуться...")
+            print("Игра окончена!")
+            game_state['game_over'] = True
+            return True
+        else:
+            print("Вам чудом удалось увернуться от ловушки!")
+            return False
 
 
 def clear_screen():
@@ -112,7 +215,10 @@ def attempt_open_treasure(game_state):
         return False
     
     # Проверяем наличие ключей
-    if 'treasure_key' in game_state['player_inventory'] or 'rusty_key' in game_state['player_inventory']:
+    has_treasure_key = 'treasure_key' in game_state['player_inventory']
+    has_rusty_key = 'rusty_key' in game_state['player_inventory']
+    
+    if has_treasure_key or has_rusty_key:
         print("Вы применяете ключ, и замок щёлкает. Сундук открыт!")
         
         # Удаляем сундук из комнаты
@@ -152,3 +258,16 @@ def attempt_open_treasure(game_state):
     else:
         print("Вы отступаете от сундука.")
         return False
+
+
+def show_help():
+    """Показать справку по командам игры"""
+    print("\nДоступные команды:")
+    print("  go <direction>  - перейти в направлении (north/south/east/west)")
+    print("  look            - осмотреть текущую комнату")
+    print("  take <item>     - поднять предмет")
+    print("  use <item>      - использовать предмет из инвентаря")
+    print("  inventory       - показать инвентарь")
+    print("  solve           - попытаться решить загадку в комнате")
+    print("  quit            - выйти из игры")
+    print("  help            - показать это сообщение")
