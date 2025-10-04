@@ -35,7 +35,7 @@ def print_welcome_message():
     print("=" * 50)
     print("          ЛАБИРИНТ ТАЙН")
     print("=" * 50)
-    print("Добро пожаловать в загадочный лабиринт!")
+    print("Добро пожаловать в ЛАБИРИНТ ТАЙН!")
     print("Используйте команды: go, look, take, inventory, solve, quit")
     print("Направления: north, south, east, west")
     print("=" * 50)
@@ -58,7 +58,6 @@ def show_help(commands):
     """Показать справку по командам игры"""
     print("\nДоступные команды:")
     for command, description in commands.items():
-        # Форматируем вывод: команда занимает 16 символов слева
         print(f"  {command:<16} - {description}")
 
 

@@ -29,22 +29,15 @@ def initialize_game():
 
 def describe_current_room(game_state):
     """Описание текущей комнаты"""
-    # Получаем данные о текущей комнате
     current_room_name = game_state['current_room']
     room = ROOMS[current_room_name]
-    
-    # Выводим название комнаты в верхнем регистре
     print(f"\n== {current_room_name.upper()} ==")
-    
-    # Выводим описание комнаты
     print(f"{room['description']}")
     
-    # Выводим заметные предметы, если они есть
     if room['items']:
         items_list = ', '.join(room['items'])
         print(f"Заметные предметы: {items_list}")
     
-    # Выводим доступные выходы
     if room['exits']:
         exits_list = ', '.join(room['exits'].keys())
         print(f"Выходы: {exits_list}")
@@ -61,10 +54,8 @@ def process_command(game_state, command):
     if not parts:
         return
     
-    # Извлекаем основную команду
     main_command = parts[0]
-    
-    # Обрабатываем команды с помощью match/case
+
     match main_command:
         case 'look':
             describe_current_room(game_state)
@@ -74,7 +65,7 @@ def process_command(game_state, command):
             if move_player(game_state, direction):
                 describe_current_room(game_state)
         
-        # Односложные команды движения
+       
         case 'north' | 'south' | 'east' | 'west' | 'up' | 'down':
             if move_player(game_state, main_command):
                 describe_current_room(game_state)
@@ -124,10 +115,7 @@ def main():
     
     # Основной игровой цикл
     while not game_state['game_over']:
-        # Получаем команду от пользователя
         command = get_input("\nВведите команду: ")
-        
-        # Обрабатываем команду
         process_command(game_state, command)
     
     # Показываем статистику после завершения игры
