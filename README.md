@@ -1,11 +1,25 @@
+# Adventure Game (Interactive Fiction)
 
-Текстовая приключенческая игра в жанре interactive fiction. Исследуйте таинственный лабиринт, решайте загадки, собирайте предметы и найдите сокровище!
-
-
-# Установка через Poetry (рекомендуется)
+A text-based adventure game in the interactive fiction genre. Explore a mysterious labyrinth, solve puzzles, collect items, and find the treasure!
+---
+### Installation (via Poetry — recommended)
 poetry install
 poetry run start
 
+### Game Objective
+Find the treasure! To do this, you will need to collect keys, which can be obtained by: solving riddles in rooms, exploring items, discovering hidden places
+
+### Key Items Required to Win
+treasure_key — obtained by solving the riddle in the Hall
+rusty_key — found inside the bronze box
+golden_key — hidden inside the shiny gem
+
+Project created as part of a programming course.
+---
+Текстовая приключенческая игра в жанре interactive fiction. Исследуйте таинственный лабиринт, решайте загадки, собирайте предметы и найдите сокровище!
+# Установка через Poetry (рекомендуется)
+poetry install
+poetry run start
 
 # Цель игры
 Найдите сокровище! Для этого вам понадобятся ключи, которые можно получить:
@@ -65,15 +79,14 @@ go west
 take shiny_gem  
 Фонтан открывает потайное отделение! Вы получаете golden_key!
 
-
-== ARMORY ==
+## ARMORY
 Оружейная комната. Доспехи стоят как будто живые.
 Заметные предметы: sword
 Выходы: south, east
 go east
 Вы используете найденный ключ, чтобы открыть путь в комнату сокровищ.
 
-== TREASURE_ROOM ==
+## TREASURE_ROOM
 КОМНАТА СОКРОВИЩ! Большой сундук стоит в центре.
 Заметные предметы: treasure_chest
 Выходы: west
@@ -94,13 +107,5 @@ use treasure_chest
 - Странные звуки (меч защищает)
 - Внезапная ловушка (факел защищает)
 
-
-Это учебный проект, созданный для демонстрации:
-- Чистой архитектуры на функциях
-- Разделения ответственности между модулями
-- Соответствия PEP8 и лучшим практикам Python
-- Полного цикла разработки от идеи до документации
-
 # Лицензия
-
 Учебный проект, созданный в рамках курса по программированию.
