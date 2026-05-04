@@ -1,3 +1,10 @@
+![Python](https://img.shields.io/badge/Python-3.11%2B-blue)
+![Adventure](https://img.shields.io/badge/Adventure-Labyrinth%20Quest-7c5cff)
+![Interactive Fiction](https://img.shields.io/badge/Genre-Interactive%20Fiction-ff69b4)
+![CLI Game](https://img.shields.io/badge/CLI-Text%20Game-orange)
+![Poetry](https://img.shields.io/badge/Poetry-Dependency%20Management-60A5FA)
+![Makefile](https://img.shields.io/badge/Makefile-Automation-lightgrey)
+
 # Adventure Game (Interactive Fiction)
 
 A text-based adventure game in the interactive fiction genre. Explore a mysterious labyrinth, solve puzzles, collect items, and find the treasure!
